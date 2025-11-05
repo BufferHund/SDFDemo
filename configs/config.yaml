@@ -1,0 +1,192 @@
+# Supermarket Brochure AI - Main Configuration
+
+# Project Settings
+project:
+  name: "supermarket-brochure-ai"
+  version: "0.1.0"
+  author: "Liyang, Zhaokun"
+
+# Data Collection
+data_collection:
+  supermarkets:
+    - name: "aldi_sued"
+      url: "https://prospekt.aldi-sued.de/"
+      has_pdf: true
+
+    - name: "aldi_nord"
+      url: "https://www.aldi-nord.de/prospekte/aldi-aktuell.html"
+      has_pdf: true
+
+    - name: "lidl"
+      url: "https://www.lidl.de/l/prospekte"
+      has_pdf: false
+
+    - name: "rewe"
+      url: "https://www.rewe.de/"
+      has_pdf: true
+
+    - name: "edeka"
+      url: "https://www.edeka.de/"
+      has_pdf: true
+
+    - name: "penny"
+      url: "https://www.penny.de/angebote"
+      has_pdf: false
+
+  output_dirs:
+    pdfs: "data/raw/pdfs"
+    images: "data/raw/images"
+    metadata: "data/metadata"
+
+  scraping:
+    timeout: 30
+    retry_attempts: 3
+    user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+
+# Preprocessing
+preprocessing:
+  image:
+    target_width: 1024
+    target_height: 1448
+    format: "png"
+    dpi: 300
+
+  pdf:
+    extract_images: true
+    poppler_path: null  # Set if needed
+
+# OCR Settings
+ocr:
+  engine: "paddleocr"  # Options: tesseract, paddleocr, easyocr
+  languages: ["de", "en"]
+
+  tesseract:
+    config: "--psm 6"
+
+  paddleocr:
+    use_gpu: true
+    lang: "german"
+    det_db_thresh: 0.3
+
+  easyocr:
+    gpu: true
+    paragraph: true
+
+# Model Training
+training:
+  model_name: "layoutlmv3"  # Options: layoutlmv3, donut, layoutxlm
+
+  layoutlmv3:
+    pretrained: "microsoft/layoutlmv3-base"
+    num_labels: 5  # product_name, price, discount, date, store
+    max_seq_length: 512
+    image_size: [224, 224]
+
+  donut:
+    pretrained: "naver-clova-ix/donut-base"
+    max_length: 768
+    image_size: [1280, 960]
+
+  hyperparameters:
+    batch_size: 4
+    learning_rate: 5e-5
+    num_epochs: 10
+    warmup_steps: 500
+    weight_decay: 0.01
+
+  peft:
+    use_lora: true
+    lora_r: 16
+    lora_alpha: 32
+    lora_dropout: 0.1
+    target_modules: ["query", "value"]
+
+  paths:
+    checkpoint_dir: "models/checkpoints"
+    log_dir: "logs"
+    output_dir: "outputs"
+
+# Evaluation
+evaluation:
+  metrics:
+    - "f1_score"
+    - "precision"
+    - "recall"
+    - "accuracy"
+
+  entity_types:
+    - "product_name"
+    - "original_price"
+    - "discounted_price"
+    - "discount_percentage"
+    - "valid_date"
+
+# Web Application
+webapp:
+  title: "Supermarket Brochure AI"
+  port: 8501
+
+  upload:
+    max_file_size: 10  # MB
+    allowed_formats: ["pdf", "png", "jpg", "jpeg"]
+
+  visualization:
+    bbox_color: "#FF0000"
+    bbox_thickness: 2
+    font_size: 12
+
+  output_formats:
+    - "json"
+    - "csv"
+    - "html"
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/app.log"
+
+# Annotation Schema
+annotation:
+  entity_labels:
+    - id: 0
+      name: "product_name"
+      color: "#FF5733"
+
+    - id: 1
+      name: "original_price"
+      color: "#33FF57"
+
+    - id: 2
+      name: "discounted_price"
+      color: "#3357FF"
+
+    - id: 3
+      name: "discount_percentage"
+      color: "#FF33F5"
+
+    - id: 4
+      name: "valid_date"
+      color: "#F5FF33"
+
+  output_schema:
+    type: "object"
+    properties:
+      product_name:
+        type: "string"
+      original_price:
+        type: "number"
+      discounted_price:
+        type: "number"
+      discount_percentage:
+        type: "number"
+      valid_from:
+        type: "string"
+        format: "date"
+      valid_to:
+        type: "string"
+        format: "date"
+      store:
+        type: "string"
+      location:
+        type: "string"
