@@ -36,7 +36,9 @@ ENV/
 
 # Jupyter Notebooks
 .ipynb_checkpoints
+# Allow example notebooks in notebooks/ directory
 *.ipynb
+!notebooks/*.ipynb
 
 # Data files (too large for git)
 data/raw/
