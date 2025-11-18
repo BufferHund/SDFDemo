@@ -53,11 +53,19 @@ Supermarket brochures contain valuable information about weekly discounts, produ
 - **Streamlit/Gradio**: Rapid web app prototyping
 - **Flask/FastAPI**: Production backend API
 
-### Pipeline Architecture ✨ New
+### Pipeline Architecture ✨
 - **End-to-End Processing**: Complete workflow from PDF/image to structured deals
 - **Multi-Method Support**: OCR, VLM, or Hybrid processing
 - **Batch Processing**: Parallel processing of multiple brochures
 - **Automatic Report Generation**: Comprehensive statistics and visualizations
+
+### Advanced Features 🆕
+- **Enhanced Logging**: Structured JSON logging with colored console output
+- **Performance Monitoring**: Real-time metrics, bottleneck detection, resource tracking
+- **Validation System**: Input/output validation, system health checks
+- **Error Recovery**: Automatic retry with exponential backoff
+- **Result Caching**: Skip re-processing unchanged files
+- **Comprehensive Testing**: 50+ unit and integration tests
 
 ## Data Sources
 
@@ -307,7 +315,9 @@ pytest tests/ -v --cov=src
 ## Documentation
 
 - 📖 [Quick Start Guide](docs/QUICKSTART.md) - Get started quickly
-- 🚀 [Pipeline Guide](docs/PIPELINE_GUIDE.md) - End-to-end processing pipeline 🆕
+- 🚀 [Pipeline Guide](docs/PIPELINE_GUIDE.md) - End-to-end processing pipeline
+- ⚡ [Pipeline Optimization](docs/PIPELINE_OPTIMIZATION.md) - Validation, monitoring, testing 🆕
+- 🌐 [Web Application Guide](docs/WEBAPP_GUIDE.md) - Interactive web interface
 - 🛠️ [CLI Usage Guide](docs/CLI_USAGE.md) - Command-line tools
 - 🔌 [API Guide](docs/API_GUIDE.md) - REST API documentation
 - 🤖 [VLM Guide](docs/VLM_GUIDE.md) - Vision Language Models (Ollama, Gemini)
