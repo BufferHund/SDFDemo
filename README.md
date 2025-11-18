@@ -32,8 +32,13 @@ Supermarket brochures contain valuable information about weekly discounts, produ
 
 ### OCR & Text Extraction
 - **Tesseract OCR**: Open-source OCR engine
-- **PaddleOCR**: Deep learning-based multilingual OCR
+- **PaddleOCR**: Deep learning-based multilingual OCR (recommended)
 - **EasyOCR**: Lightweight PyTorch-based OCR
+
+### Vision Language Models (VLM) ✨ New
+- **Ollama (Local)**: LLaVA, Bakllava - Free, runs locally
+- **Gemini API (Cloud)**: Google's multimodal AI - Fast, cloud-based
+- **Smart Extraction**: Direct structured output from images
 
 ### Layout Analysis & Document Understanding
 - **LayoutLMv3**: Transformer combining text, layout, and image embeddings
@@ -142,6 +147,20 @@ python src/models/ocr_engine.py image.png --engine paddleocr --languages de en
 python src/models/ocr_engine.py image.png --engine easyocr --gpu --output results.json
 ```
 
+### VLM Analysis ✨ New
+```bash
+# Using Ollama (local, free)
+./brochure_ai.py analyze brochure.png --vlm ollama
+
+# Using Gemini API (cloud)
+./brochure_ai.py analyze brochure.png --vlm gemini --api-key YOUR_KEY
+
+# Direct Python usage
+python src/models/vlm_engine.py brochure.png --engine ollama --output deals.json
+```
+
+See [VLM Guide](docs/VLM_GUIDE.md) for detailed instructions.
+
 ### Model Training
 ```bash
 # Train LayoutLMv3 with LoRA
@@ -239,9 +258,11 @@ pytest tests/ -v --cov=src
 - 📖 [Quick Start Guide](docs/QUICKSTART.md) - Get started quickly
 - 🛠️ [CLI Usage Guide](docs/CLI_USAGE.md) - Command-line tools
 - 🔌 [API Guide](docs/API_GUIDE.md) - REST API documentation
+- 🤖 [VLM Guide](docs/VLM_GUIDE.md) - Vision Language Models (Ollama, Gemini) ✨ New
 - 📅 [Project Plan](docs/PROJECT_PLAN.md) - 8-week development plan
 - 🤝 [Contributing](docs/CONTRIBUTING.md) - How to contribute
 - 📓 [Notebooks](notebooks/) - Jupyter notebook examples
+- 💡 [VLM Examples](examples/vlm_examples.py) - Code examples ✨ New
 
 ## Contributors
 

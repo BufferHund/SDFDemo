@@ -7,8 +7,13 @@ datasets>=2.12.0
 # OCR Libraries
 pytesseract>=0.3.10
 paddleocr>=2.6.1
+paddlepaddle>=2.5.0  # PaddleOCR backend
 easyocr>=1.7.0
 opencv-python>=4.8.0
+
+# Vision Language Models (VLM)
+google-generativeai>=0.3.0  # Gemini API
+# For Ollama: no package needed, uses HTTP API
 
 # Document Processing
 pdf2image>=1.16.3

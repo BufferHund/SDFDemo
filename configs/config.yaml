@@ -72,6 +72,21 @@ ocr:
     gpu: true
     paragraph: true
 
+# Vision Language Models (VLM)
+vlm:
+  engine: "ollama"  # Options: ollama, gemini
+  temperature: 0.1
+
+  ollama:
+    base_url: "http://localhost:11434"
+    model: "llava:latest"  # Options: llava, bakllava, llava:13b, llava:34b
+    timeout: 60
+
+  gemini:
+    model: "gemini-1.5-flash"  # Options: gemini-1.5-flash, gemini-1.5-pro
+    # API key should be set as environment variable: GEMINI_API_KEY
+    max_output_tokens: 2048
+
 # Model Training
 training:
   model_name: "layoutlmv3"  # Options: layoutlmv3, donut, layoutxlm

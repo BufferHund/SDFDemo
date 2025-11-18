@@ -102,6 +102,41 @@ def cmd_serve(args):
         return 1
 
 
+def cmd_analyze(args):
+    """VLM analysis command."""
+    from src.models.vlm_engine import create_vlm_engine
+    import json
+
+    logger.info(f"Analyzing {args.image} with {args.vlm}")
+
+    # Create VLM engine
+    kwargs = {}
+    if args.api_key:
+        kwargs['api_key'] = args.api_key
+    if args.model:
+        kwargs['model_name'] = args.model
+
+    vlm = create_vlm_engine(engine_type=args.vlm, **kwargs)
+
+    # Analyze
+    result = vlm.analyze_image(args.image, prompt=args.prompt)
+
+    # Print results
+    logger.info(f"Found {len(result.get('deals', []))} deals")
+
+    if args.output:
+        with open(args.output, 'w', encoding='utf-8') as f:
+            json.dump(result, f, indent=2, ensure_ascii=False)
+        logger.info(f"Results saved to {args.output}")
+    else:
+        for i, deal in enumerate(result.get('deals', []), 1):
+            print(f"{i}. {deal.get('product_name', 'Unknown')}")
+            if deal.get('discounted_price'):
+                print(f"   Price: €{deal['discounted_price']}")
+
+    return 0
+
+
 def cmd_preprocess(args):
     """Preprocessing command."""
     if args.pdf:
@@ -160,6 +195,15 @@ def main():
     serve_parser.add_argument('--api', action='store_true', help='Start API server')
     serve_parser.add_argument('--web', action='store_true', help='Start web app')
 
+    # Analyze command (VLM)
+    analyze_parser = subparsers.add_parser('analyze', help='Analyze image with VLM')
+    analyze_parser.add_argument('image', help='Image file path')
+    analyze_parser.add_argument('--vlm', default='ollama', choices=['ollama', 'gemini'], help='VLM engine')
+    analyze_parser.add_argument('--model', help='Model name (e.g., llava:latest, gemini-1.5-flash)')
+    analyze_parser.add_argument('--prompt', help='Custom prompt')
+    analyze_parser.add_argument('--api-key', help='API key (for Gemini)')
+    analyze_parser.add_argument('--output', help='Output JSON file')
+
     # Preprocess command
     preprocess_parser = subparsers.add_parser('preprocess', help='Preprocess data')
     preprocess_parser.add_argument('input', help='Input directory or file')
@@ -178,6 +222,7 @@ def main():
     commands = {
         'scrape': cmd_scrape,
         'extract': cmd_extract,
+        'analyze': cmd_analyze,
         'train': cmd_train,
         'serve': cmd_serve,
         'preprocess': cmd_preprocess
