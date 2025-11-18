@@ -123,6 +123,55 @@ chmod +x brochure_ai.py
 ./brochure_ai.py serve --web
 ```
 
+### 6. Pipeline Processing (pipeline) 🆕
+
+```bash
+# Single file - Hybrid method (OCR + VLM)
+./brochure_ai.py pipeline brochure.pdf
+
+# OCR-only method
+./brochure_ai.py pipeline brochure.png --method ocr
+
+# VLM-only method
+./brochure_ai.py pipeline brochure.png --method vlm --vlm-engine ollama
+
+# Custom configuration
+./brochure_ai.py pipeline brochure.pdf \
+  --method hybrid \
+  --ocr-engine paddleocr \
+  --vlm-engine ollama \
+  --vlm-model bakllava \
+  --gpu \
+  --output outputs/custom
+
+# Batch processing
+./brochure_ai.py pipeline data/brochures/ --batch
+
+# Batch with report generation
+./brochure_ai.py pipeline data/brochures/ --batch --report --workers 8
+
+# Batch with pattern matching
+./brochure_ai.py pipeline data/ --batch --pattern "*.pdf" --recursive
+
+# Quiet mode (no output)
+./brochure_ai.py pipeline brochure.pdf --quiet
+
+# Disable visualizations
+./brochure_ai.py pipeline brochure.pdf --no-viz
+```
+
+**Pipeline Methods:**
+- `ocr` - Fast, OCR-based extraction
+- `vlm` - Intelligent VLM-based extraction
+- `hybrid` - Best of both worlds (recommended)
+
+**Batch Options:**
+- `--batch` - Enable batch processing mode
+- `--pattern` - File pattern (e.g., "*.pdf", "*.png")
+- `--recursive` - Search subdirectories
+- `--workers N` - Number of parallel workers (default: 4)
+- `--report` - Generate detailed report
+
 ## Direct Module Usage
 
 ### Data Collection

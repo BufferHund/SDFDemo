@@ -53,6 +53,12 @@ Supermarket brochures contain valuable information about weekly discounts, produ
 - **Streamlit/Gradio**: Rapid web app prototyping
 - **Flask/FastAPI**: Production backend API
 
+### Pipeline Architecture ✨ New
+- **End-to-End Processing**: Complete workflow from PDF/image to structured deals
+- **Multi-Method Support**: OCR, VLM, or Hybrid processing
+- **Batch Processing**: Parallel processing of multiple brochures
+- **Automatic Report Generation**: Comprehensive statistics and visualizations
+
 ## Data Sources
 
 Target German supermarket chains:
@@ -161,6 +167,31 @@ python src/models/vlm_engine.py brochure.png --engine ollama --output deals.json
 
 See [VLM Guide](docs/VLM_GUIDE.md) for detailed instructions.
 
+### Complete Pipeline 🚀 New
+```bash
+# Single file - Hybrid processing (OCR + VLM)
+./brochure_ai.py pipeline brochure.pdf
+
+# Batch processing with report
+./brochure_ai.py pipeline data/brochures/ --batch --report
+
+# Custom configuration
+./brochure_ai.py pipeline brochure.pdf \
+  --method hybrid \
+  --ocr-engine paddleocr \
+  --vlm-engine ollama \
+  --gpu \
+  --output outputs/results
+
+# Python API
+from src.pipeline import create_pipeline
+pipeline = create_pipeline('hybrid')
+result = pipeline.process('brochure.pdf')
+print(f"Found {len(result.deals)} deals")
+```
+
+See [Pipeline Guide](docs/PIPELINE_GUIDE.md) for complete documentation.
+
 ### Model Training
 ```bash
 # Train LayoutLMv3 with LoRA
@@ -256,13 +287,14 @@ pytest tests/ -v --cov=src
 ## Documentation
 
 - 📖 [Quick Start Guide](docs/QUICKSTART.md) - Get started quickly
+- 🚀 [Pipeline Guide](docs/PIPELINE_GUIDE.md) - End-to-end processing pipeline 🆕
 - 🛠️ [CLI Usage Guide](docs/CLI_USAGE.md) - Command-line tools
 - 🔌 [API Guide](docs/API_GUIDE.md) - REST API documentation
-- 🤖 [VLM Guide](docs/VLM_GUIDE.md) - Vision Language Models (Ollama, Gemini) ✨ New
+- 🤖 [VLM Guide](docs/VLM_GUIDE.md) - Vision Language Models (Ollama, Gemini)
 - 📅 [Project Plan](docs/PROJECT_PLAN.md) - 8-week development plan
 - 🤝 [Contributing](docs/CONTRIBUTING.md) - How to contribute
 - 📓 [Notebooks](notebooks/) - Jupyter notebook examples
-- 💡 [VLM Examples](examples/vlm_examples.py) - Code examples ✨ New
+- 💡 [Examples](examples/) - Code examples (VLM, Pipeline)
 
 ## Contributors
 

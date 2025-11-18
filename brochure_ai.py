@@ -160,6 +160,79 @@ def cmd_preprocess(args):
         return 1
 
 
+def cmd_pipeline(args):
+    """Pipeline processing command."""
+    from src.pipeline import create_pipeline, BatchProcessor, PipelineConfig, ProcessingMethod
+    import json
+
+    logger.info(f"Running pipeline with method: {args.method}")
+
+    if args.batch:
+        # Batch processing
+        config = PipelineConfig(
+            method=ProcessingMethod(args.method),
+            ocr_engine=args.ocr_engine,
+            vlm_engine=args.vlm_engine,
+            vlm_model=args.vlm_model or "llava:latest",
+            ocr_use_gpu=args.gpu,
+            output_dir=args.output or "outputs/pipeline",
+            save_visualizations=not args.no_viz
+        )
+
+        processor = BatchProcessor(config=config, max_workers=args.workers)
+
+        if Path(args.input).is_dir():
+            result = processor.process_directory(
+                args.input,
+                pattern=args.pattern,
+                recursive=args.recursive
+            )
+        else:
+            # Single file in batch mode
+            result = processor.process([args.input])
+
+        # Generate report
+        if args.report:
+            report_dir = Path(args.output or "outputs/pipeline") / "report"
+            processor.generate_report(result, report_dir)
+            logger.info(f"Report generated in {report_dir}")
+
+        logger.info(f"Batch processing complete: {result.success_rate:.1f}% success rate")
+
+    else:
+        # Single file processing
+        pipeline = create_pipeline(
+            method=args.method,
+            ocr_engine=args.ocr_engine,
+            vlm_engine=args.vlm_engine,
+            vlm_model=args.vlm_model or "llava:latest",
+            ocr_use_gpu=args.gpu,
+            output_dir=args.output or "outputs/pipeline",
+            save_visualizations=not args.no_viz
+        )
+
+        result = pipeline.process(args.input)
+
+        if result.success:
+            logger.info(f"✓ Success: Found {len(result.deals)} deals in {result.processing_time:.2f}s")
+
+            # Print deals
+            if not args.quiet:
+                print("\nExtracted Deals:")
+                print("=" * 80)
+                for i, deal in enumerate(result.deals, 1):
+                    print(f"\n{i}. {deal.get('product_name', 'Unknown')}")
+                    if deal.get('discounted_price'):
+                        print(f"   Price: €{deal['discounted_price']}")
+                    if deal.get('discount_percentage'):
+                        print(f"   Discount: {deal['discount_percentage']}%")
+        else:
+            logger.error(f"✗ Failed: {result.error}")
+            return 1
+
+    return 0
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -212,6 +285,27 @@ def main():
     preprocess_parser.add_argument('--images', action='store_true', help='Process images')
     preprocess_parser.add_argument('--dpi', type=int, default=300, help='DPI for PDF conversion')
 
+    # Pipeline command
+    pipeline_parser = subparsers.add_parser('pipeline', help='Run complete pipeline')
+    pipeline_parser.add_argument('input', help='Input file or directory')
+    pipeline_parser.add_argument('--method', default='hybrid', choices=['ocr', 'vlm', 'hybrid'],
+                                 help='Processing method')
+    pipeline_parser.add_argument('--ocr-engine', default='paddleocr',
+                                 choices=['tesseract', 'paddleocr', 'easyocr'],
+                                 help='OCR engine')
+    pipeline_parser.add_argument('--vlm-engine', default='ollama', choices=['ollama', 'gemini'],
+                                 help='VLM engine')
+    pipeline_parser.add_argument('--vlm-model', help='VLM model name')
+    pipeline_parser.add_argument('--gpu', action='store_true', help='Use GPU for OCR')
+    pipeline_parser.add_argument('--output', help='Output directory')
+    pipeline_parser.add_argument('--batch', action='store_true', help='Batch processing mode')
+    pipeline_parser.add_argument('--pattern', default='*', help='File pattern for batch mode')
+    pipeline_parser.add_argument('--recursive', action='store_true', help='Recursive directory search')
+    pipeline_parser.add_argument('--workers', type=int, default=4, help='Number of parallel workers')
+    pipeline_parser.add_argument('--report', action='store_true', help='Generate detailed report')
+    pipeline_parser.add_argument('--no-viz', action='store_true', help='Disable visualizations')
+    pipeline_parser.add_argument('--quiet', action='store_true', help='Suppress output')
+
     args = parser.parse_args()
 
     if not args.command:
@@ -225,7 +319,8 @@ def main():
         'analyze': cmd_analyze,
         'train': cmd_train,
         'serve': cmd_serve,
-        'preprocess': cmd_preprocess
+        'preprocess': cmd_preprocess,
+        'pipeline': cmd_pipeline
     }
 
     if args.command in commands:
