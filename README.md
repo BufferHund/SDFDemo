@@ -192,6 +192,57 @@ docker-compose up
 - **OCR Accuracy**: Character/word recognition rate
 - **Entity Linking Accuracy**: Correct association of text blocks
 
+## Quick Commands
+
+### Using Makefile
+```bash
+make setup        # Initial setup
+make test         # Run tests
+make run-api      # Start API server
+make run-webapp   # Start web app
+make scrape-all   # Scrape all supermarkets
+make clean        # Clean temp files
+```
+
+### Using Unified CLI
+```bash
+# Make executable
+chmod +x brochure_ai.py
+
+# Scrape data
+./brochure_ai.py scrape --all
+
+# Extract text
+./brochure_ai.py extract image.png
+
+# Train model
+./brochure_ai.py train
+
+# Start services
+./brochure_ai.py serve --api   # or --web
+```
+
+See [CLI Usage Guide](docs/CLI_USAGE.md) for complete documentation.
+
+## Testing
+
+```bash
+# Run all tests
+make test
+
+# Or use pytest directly
+pytest tests/ -v --cov=src
+```
+
+## Documentation
+
+- 📖 [Quick Start Guide](docs/QUICKSTART.md) - Get started quickly
+- 🛠️ [CLI Usage Guide](docs/CLI_USAGE.md) - Command-line tools
+- 🔌 [API Guide](docs/API_GUIDE.md) - REST API documentation
+- 📅 [Project Plan](docs/PROJECT_PLAN.md) - 8-week development plan
+- 🤝 [Contributing](docs/CONTRIBUTING.md) - How to contribute
+- 📓 [Notebooks](notebooks/) - Jupyter notebook examples
+
 ## Contributors
 
 - Liyang
