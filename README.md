@@ -203,25 +203,45 @@ python src/models/train.py --resume models/checkpoints/checkpoint-1000
 
 ### Web Application
 
-**Option 1: Streamlit (User Interface)**
+**Option 1: Enhanced Web Interface (Recommended)** 🆕
 ```bash
-streamlit run src/webapp/app.py
+# Using launcher script
+./run_webapp.sh
+
+# Or directly with streamlit
+streamlit run src/webapp/app_enhanced.py
 ```
 Then open http://localhost:8501
 
-**Option 2: FastAPI (REST API)**
+Features:
+- 📄 Single file processing with 3 methods (OCR/VLM/Hybrid)
+- 📦 Batch processing with parallel execution
+- ⚖️ Method comparison tool
+- 🎨 Visual deal highlighting
+- 📊 Interactive analytics
+
+**Option 2: Basic Interface**
+```bash
+./run_webapp.sh basic
+# or
+streamlit run src/webapp/app.py
+```
+
+**Option 3: FastAPI (REST API)**
 ```bash
 cd src/webapp
 python api.py
 ```
 API docs: http://localhost:8000/docs
 
-**Option 3: Docker**
+**Option 4: Docker**
 ```bash
 docker-compose up
 ```
 - API: http://localhost:8000
 - Web UI: http://localhost:8501
+
+See [Web Application Guide](docs/WEBAPP_GUIDE.md) for complete documentation.
 
 ## Expected Outputs
 

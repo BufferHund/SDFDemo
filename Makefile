@@ -49,6 +49,9 @@ run-api:
 	cd src/webapp && python api.py
 
 run-webapp:
+	streamlit run src/webapp/app_enhanced.py
+
+run-webapp-basic:
 	streamlit run src/webapp/app.py
 
 docker-build:

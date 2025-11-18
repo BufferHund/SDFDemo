@@ -92,9 +92,24 @@ def cmd_serve(args):
         return api_main()
 
     elif args.web:
-        logger.info("Starting Streamlit web app...")
         import subprocess
-        subprocess.run(['streamlit', 'run', 'src/webapp/app.py'])
+
+        # Choose which interface to run
+        if hasattr(args, 'enhanced') and args.enhanced == False:
+            webapp_file = 'src/webapp/app.py'
+            logger.info("Starting basic web interface...")
+        else:
+            webapp_file = 'src/webapp/app_enhanced.py'
+            logger.info("Starting enhanced web interface...")
+
+        # Build streamlit command
+        cmd = ['streamlit', 'run', webapp_file]
+
+        # Add port if specified
+        if hasattr(args, 'port') and args.port:
+            cmd.extend(['--server.port', str(args.port)])
+
+        subprocess.run(cmd)
         return 0
 
     else:
@@ -267,6 +282,11 @@ def main():
     serve_parser = subparsers.add_parser('serve', help='Start services')
     serve_parser.add_argument('--api', action='store_true', help='Start API server')
     serve_parser.add_argument('--web', action='store_true', help='Start web app')
+    serve_parser.add_argument('--enhanced', action='store_true', default=True,
+                             help='Use enhanced interface (default)')
+    serve_parser.add_argument('--basic', action='store_false', dest='enhanced',
+                             help='Use basic interface')
+    serve_parser.add_argument('--port', type=int, help='Port number (default: 8501 for web, 8000 for API)')
 
     # Analyze command (VLM)
     analyze_parser = subparsers.add_parser('analyze', help='Analyze image with VLM')
