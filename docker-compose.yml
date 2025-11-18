@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # API Service
+  api:
+    build: .
+    container_name: brochure-ai-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./outputs:/app/outputs
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: uvicorn src.webapp.api:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+
+  # Streamlit Web App
+  webapp:
+    build: .
+    container_name: brochure-ai-webapp
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./outputs:/app/outputs
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: streamlit run src/webapp/app.py --server.port 8501 --server.address 0.0.0.0
+    restart: unless-stopped
+    depends_on:
+      - api
+
+volumes:
+  data:
+  models:
+  logs:
+  outputs:

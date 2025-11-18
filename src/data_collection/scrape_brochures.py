@@ -18,6 +18,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.data_collection.aldi_scraper import AldiSuedScraper, AldiNordScraper
 from src.data_collection.rewe_scraper import ReweScraper
+from src.data_collection.lidl_scraper import LidlScraper
+from src.data_collection.edeka_scraper import EdekaScraper
 
 logging.basicConfig(
     level=logging.INFO,
@@ -54,6 +56,24 @@ def scrape_rewe(output_dir: str, market_id: str = None):
         return summary
 
 
+def scrape_lidl(output_dir: str):
+    """Scrape Lidl brochures."""
+    logger.info("Starting Lidl scraper")
+    with LidlScraper(output_dir=output_dir) as scraper:
+        summary = scraper.run()
+        logger.info(f"Lidl summary: {summary}")
+        return summary
+
+
+def scrape_edeka(output_dir: str, market_url: str = None):
+    """Scrape Edeka brochures."""
+    logger.info(f"Starting Edeka scraper (market_url: {market_url})")
+    with EdekaScraper(market_url=market_url, output_dir=output_dir) as scraper:
+        summary = scraper.run()
+        logger.info(f"Edeka summary: {summary}")
+        return summary
+
+
 def main():
     """Main function."""
     parser = argparse.ArgumentParser(
@@ -78,7 +98,7 @@ Examples:
     parser.add_argument(
         '--supermarket',
         type=str,
-        choices=['aldi_sued', 'aldi_nord', 'rewe'],
+        choices=['aldi_sued', 'aldi_nord', 'rewe', 'lidl', 'edeka'],
         help='Supermarket to scrape'
     )
 
@@ -92,6 +112,12 @@ Examples:
         '--market-id',
         type=str,
         help='Market ID for REWE (optional, location-specific offers)'
+    )
+
+    parser.add_argument(
+        '--market-url',
+        type=str,
+        help='Market URL for Edeka (optional, market-specific offers)'
     )
 
     parser.add_argument(
@@ -139,6 +165,20 @@ Examples:
             summaries.append(summary)
         except Exception as e:
             logger.error(f"Failed to scrape REWE: {e}", exc_info=True)
+
+    if args.all or args.supermarket == 'lidl':
+        try:
+            summary = scrape_lidl(args.output_dir)
+            summaries.append(summary)
+        except Exception as e:
+            logger.error(f"Failed to scrape Lidl: {e}", exc_info=True)
+
+    if args.all or args.supermarket == 'edeka':
+        try:
+            summary = scrape_edeka(args.output_dir, args.market_url)
+            summaries.append(summary)
+        except Exception as e:
+            logger.error(f"Failed to scrape Edeka: {e}", exc_info=True)
 
     # Print final summary
     logger.info("=" * 80)

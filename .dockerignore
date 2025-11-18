@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Git
+.git/
+.gitignore
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data files (too large)
+data/raw/
+data/processed/
+data/annotated/
+*.pdf
+*.png
+*.jpg
+*.jpeg
+
+# Model checkpoints
+models/checkpoints/*.pt
+models/checkpoints/*.pth
+
+# Logs
+logs/*.log
+
+# Outputs
+outputs/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+*.ipynb
+.ipynb_checkpoints/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

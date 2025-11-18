@@ -113,23 +113,65 @@ pip install -r requirements.txt
 
 ### Data Collection
 ```bash
-python src/data_collection/scrape_brochures.py --supermarket aldi --output data/raw/pdfs/
+# Scrape specific supermarket
+python src/data_collection/scrape_brochures.py --supermarket aldi_sued
+
+# Scrape all supermarkets
+python src/data_collection/scrape_brochures.py --all
+
+# Scrape with specific options
+python src/data_collection/scrape_brochures.py --supermarket rewe --market-id 123456
+python src/data_collection/scrape_brochures.py --supermarket edeka --market-url "https://..."
 ```
 
 ### Preprocessing
 ```bash
-python src/preprocessing/convert_to_images.py --input data/raw/pdfs/ --output data/processed/images/
+# Convert PDFs to images
+python src/preprocessing/pdf_converter.py data/raw/pdfs --output-dir data/processed/images
+
+# Process and standardize images
+python src/preprocessing/image_processor.py data/raw/images --output-dir data/processed/standardized
+```
+
+### OCR Extraction
+```bash
+# Using PaddleOCR (recommended)
+python src/models/ocr_engine.py image.png --engine paddleocr --languages de en
+
+# Using EasyOCR with GPU
+python src/models/ocr_engine.py image.png --engine easyocr --gpu --output results.json
 ```
 
 ### Model Training
 ```bash
-python src/models/train.py --config configs/layoutlmv3_config.yaml
+# Train LayoutLMv3 with LoRA
+python src/models/train.py --train-dir data/annotated/train --val-dir data/annotated/val --use-lora
+
+# Resume from checkpoint
+python src/models/train.py --resume models/checkpoints/checkpoint-1000
 ```
 
 ### Web Application
+
+**Option 1: Streamlit (User Interface)**
 ```bash
 streamlit run src/webapp/app.py
 ```
+Then open http://localhost:8501
+
+**Option 2: FastAPI (REST API)**
+```bash
+cd src/webapp
+python api.py
+```
+API docs: http://localhost:8000/docs
+
+**Option 3: Docker**
+```bash
+docker-compose up
+```
+- API: http://localhost:8000
+- Web UI: http://localhost:8501
 
 ## Expected Outputs
 
